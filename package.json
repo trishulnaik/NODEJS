@@ -13,7 +13,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev-common": "nodemon server-common.js",
-    "dev-express": "nodemon server-express.js"
+    "dev-express": "nodemon server-express.js",
+    "start": "node server-express.js"
   },
   "dependencies": {
     "express": "^5.2.1",
