@@ -1,15 +1,10 @@
 const express = require('express');
 const path = require('node:path');
-const fsPromises = require("node:fs/promises");
+const fs = require("node:fs");
+const fsPromises = fs.promises;
 const { getFilePathWithExt, PUBLIC_FOLDER_NAME } = require('./common-helper');
 const myServer = express();
 const PORT = 5556;
-
-myServer.get('/data/data.json', async (req, res) => {
-    const { filePath } = getFilePathWithExt(req.url)
-    let data = await fsPromises.readFile(filePath);
-    res.json(JSON.parse(data));
-})
 
 // middleware to server static files
 myServer.use(express.static(PUBLIC_FOLDER_NAME));
@@ -25,6 +20,16 @@ try {
     })
     myServer.get(['/subDirectory/new-page', '/subDirectory/new-page.html'], (req, res) => {
         res.sendFile(path.join(viewsPath, 'subDirectory', 'new-page.html'));
+    })
+    myServer.get('/data/data.json', async (req, res) => {
+        const { filePath } = getFilePathWithExt(req.url)
+        console.log(filePath);
+        if (fs.existsSync(filePath)) {
+            let data = await fsPromises.readFile(filePath);
+            res.json(JSON.parse(data));
+        } else {
+            res.status(404).json({ "error": "File not Found" });
+        }
     })
     myServer.get('/*splat', (req, res) => {
         res.status(404).sendFile(path.join(viewsPath, '404.html'));
